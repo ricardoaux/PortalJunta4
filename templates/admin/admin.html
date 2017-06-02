@@ -102,8 +102,8 @@
                                         <td><a href='/manager/utilizador/{{ f.user_id }}'> {{ f.username }} </a></td>
                                         <td>{{ f.servico }}</td>
                                         <td>{{ f.estado }}</td>
-                                        <td><p><a href='/manager/requerimento/{{ f.id }}'> Ver </a></p></td>
-                                        <td><p><a href='/manager/requerimento/{{ f.id }}/change'> Mudar Estado </a></p></td>
+                                        <!-- <td><p><a href='/manager/requerimento/{{ f.id }}'> Ver </a></p></td> -->
+                                        <td><p><a href='/manager/requerimento/{{ f.id }}/change'> Gerir </a></p></td>
                                     </tr>
                                 {% endfor %}
                             {% else %}

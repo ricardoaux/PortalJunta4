@@ -136,10 +136,10 @@ class Servico (models.Model):
 
 class Requerimento(models.Model):
     ESTADOS = (
-        ("E1", "Em Análise"),
-        ("E2", "Aguarda Pagamento"),
-        ("E3", "Diferido"),
-        ("E4", "Recusado"),
+        ("ANALISE", "Em Análise"),
+        ("PAGAMENTO", "Aguarda Pagamento"),
+        ("DIFERIDO", "Diferido"),
+        ("RECUSADO", "Recusado"),
     )
 
     ENV = (
@@ -161,4 +161,6 @@ class Requerimento(models.Model):
     descricao = models.CharField(max_length=2000)
     pagamento = models.CharField(max_length=20, choices=PAG,  blank=True, null=True, default="O")
     envio = models.CharField(max_length=20, choices=ENV,  blank=True, null=True, default="C")
+    descricao = models.CharField(max_length=2000,  blank=True, null=True)
+    mensagem = models.CharField(max_length=1000, blank=True, null=True)
 

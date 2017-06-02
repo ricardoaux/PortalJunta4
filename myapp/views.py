@@ -126,7 +126,8 @@ def requerimentos(request):
                     documento = form.cleaned_data['documento'],
                     envio = form.cleaned_data['envio'],
                     pagamento = form.cleaned_data['pagamento'],
-                    estado = "Em análise"
+                    estado = "ANALISE",
+                    mensagem  =  None
                 )
                 messages.success(request, 'Requerimento Efetuado! Verique o Seu Estado Brevemente')
                 return HttpResponseRedirect('./..')
@@ -227,8 +228,20 @@ def eventos(request, num=0):
 
 @login_required(login_url='auth_error')
 def change_state(request, num=0):
+    temp = Requerimento.objects.get(id=num)
+    form = EstadoForm(request.POST or None, initial={'estado': temp.estado, 'mensagem': temp.mensagem})
+    if request.method == 'POST':
+        if form.is_valid():
+            try:
+                Requerimento.objects.filter(id = num).update(estado = form.cleaned_data['estado'], mensagem = form.cleaned_data['mensagem'], data_ult_atual = datetime.now())
+                messages.success(request, 'Requerimento Atualizado')
+                return HttpResponseRedirect('/manager')
+            except Exception as e:
+                messages.error(request, 'Erro ao Atualizar Estado')
+                return HttpResponseRedirect('/manager')
 
-    return render(request, 'admin/changestate.html', {'user': request.user})
+    req = Requerimento.objects.get(id=num)
+    return render(request, 'admin/changestate.html', {'form': form,'user': request.user, 'req': req})
 
 
 @login_required(login_url='auth_error')
@@ -377,7 +390,6 @@ def admin(request):
 
         for req in reqs:
             user = User.objects.get(id=req['utilizador_id'])
-            cidadao = Cidadao.objects.get(user = user)
             servico = Servico.objects.get(id=req['servico_id'])
             temp.append({'id':req['id'],'username':user.username ,'servico':servico.nome, 'estado':req['estado'], 'user_id':user.id})
 

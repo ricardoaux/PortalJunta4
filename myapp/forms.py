@@ -164,7 +164,7 @@ class RequerimentoForm(forms.ModelForm):
     class Meta:
         model = Requerimento
         fields = ('__all__')
-        exclude = ['utilizador',  'estado']
+        exclude = ['utilizador',  'estado', 'mensagem']
 
     def clean_servico(self):
         if 'servico' in self.cleaned_data:
@@ -189,9 +189,31 @@ class RequerimentoForm(forms.ModelForm):
             return pag[0]
 
 
+class EstadoForm(forms.ModelForm):
+    ES = (
+        ("ANALISE", "Em Análise"),
+        ("PAGAMENTO", "Aguarda Pagamento"),
+        ("DIFERIDO", "Diferido"),
+        ("RECUSADO", "Recusado"),
+    )
 
-# class NoticiaForm(forms.ModelForm):
-#     class Meta:
-#         model = Noticia
-#         fields = ('titulo', 'descricao', 'imagem')
+    estado = forms.MultipleChoiceField(label='Estado do Requerimento', widget=forms.SelectMultiple, choices=ES)
+    mensagem = forms.CharField(label='Mensagem para o Utilizador', max_length=1000, required=False, widget=forms.Textarea)
+
+    class Meta:
+        model = Requerimento
+        fields = ('estado', 'mensagem')
+
+    def clean_estado(self):
+        if 'estado' in self.cleaned_data:
+            estado = self.cleaned_data['estado']
+            return estado[0]
+
+
+
+#    def __init__(self, id):
+#        super(EstadoForm, self).__init__()
+#        temp = Requerimento.objects.get(id=id)
+#        self.fields['estado'].initial = temp.estado
+#        self.fields['mensagem'].initial = temp.mensagem
 
