@@ -21,10 +21,10 @@ from django.db.models import Count, Q
 
 import json
 
-
 # Create your views here.
 
 # https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
+
 
 def index(request):
     news = show_news(request, 0)
@@ -242,6 +242,20 @@ def change_state(request, num=0):
 
     req = Requerimento.objects.get(id=num)
     return render(request, 'admin/changestate.html', {'form': form,'user': request.user, 'req': req})
+
+
+@login_required(login_url='auth_error')
+def estado_requerimentos(request):
+    temp2 = []
+    temp = Requerimento.objects.filter(utilizador = request.user)
+    for x in range (0, len(temp)):
+        if temp[x].envio == "C":
+            temp2.append({'id':temp[x].id,'preco':temp[x].servico.preco + 1})
+            #temp2[temp[x].id] = temp[x].servico.preco + 1;
+        else:
+            temp2.append({'id':temp[x].id,'preco':temp[x].servico.preco + 1})
+            #temp2[temp[x].id] = temp[x].servico.preco;
+    return render(request, 'servicos/consultarpedidos.html', {'user': request.user, 'req': temp, 'valor': temp2})
 
 
 @login_required(login_url='auth_error')
