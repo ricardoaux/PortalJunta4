@@ -20,12 +20,14 @@ from django.contrib import messages
 from django.db.models import Count, Q
 
 import json
+import sys
+import urllib.parse
+import requests
+import cgi
 
 # Create your views here.
 
 # https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
-
-
 def index(request):
     news = show_news(request, 0)
     events = show_events(request)
@@ -40,8 +42,79 @@ def my_404_view(request):
     return render(request, 'error/404.html', status=404)
 
 
-#def questionario(request):
-#    return render(request, 'outros/questionario.html')
+def success_paypal(request, num=0):
+    try:
+        Requerimento.objects.filter(id = num).update(estado = "PAGO", data_ult_atual = datetime.now())
+        messages.success(request, 'O Seu Pagamento Foi Recebido e o Seu Pedido Será Diferido Brevemente')
+        return HttpResponseRedirect('/')
+    except Exception as e:
+        messages.error(request, 'Erro ao Atualizar Estado')
+        return HttpResponseRedirect('/')
+
+def paypal_ipn(request):
+    '''This module processes PayPal Instant Payment Notification messages (IPNs).
+    '''
+    form = cgi.FieldStorage()
+
+    #VERIFY_URL_PROD = 'https://www.paypal.com/cgi-bin/webscr'
+    VERIFY_URL_TEST = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+
+    # Switch as appropriate
+    VERIFY_URL = VERIFY_URL_TEST
+
+    # CGI preamble
+    print("content-type: text/plain")
+    print()
+
+    # Read and parse query string
+    param_str = sys.stdin.readline().strip()
+    params = urllib.parse.parse_qsl(param_str)
+
+    # Add '_notify-validate' parameter
+    params.append(('cmd', '_notify-validate'))
+
+    # Post back to PayPal for validation
+    headers = {'content-type': 'application/x-www-form-urlencoded', 'host': 'www.paypal.com'}
+    r = requests.post(VERIFY_URL, params=params, headers=headers, verify=True)
+    r.raise_for_status()
+
+    # Check return message and take action as needed
+    if r.text == 'VERIFIED':
+        pass
+    elif r.text == 'INVALID':
+        pass
+    else:
+        pass
+
+    fields = {	'item_name': None,
+                  'item_number': None,
+                  'payment_status': None,
+                  'mc_gross': None,
+                  'mc_currency': None,
+                  'txn_id': None,
+                  'receiver_email': None,
+                  'payer_email': None,
+                  'custom': None,
+                  }
+
+    for k in fields.keys():
+        if k in form:
+            fields[k] = form[k].value
+
+    item_name = fields['item_name']
+    item_number = fields['item_number']
+    payment_status = fields['payment_status']
+    payment_amount = fields['mc_gross']
+    payment_currency = fields['mc_currency']
+    txn_id = fields['txn_id']
+    receiver_email = fields['receiver_email']
+    payer_email = fields['payer_email']
+
+    f = open("abc", 'w+')
+    f.write("ccccc"+'\n')
+    f.close()
+
+    return render(request, 'teste.html', {'a': item_name})
 
 
 def mylogin(request):
@@ -247,14 +320,20 @@ def change_state(request, num=0):
 @login_required(login_url='auth_error')
 def estado_requerimentos(request):
     temp2 = []
+    aux = 0;
     temp = Requerimento.objects.filter(utilizador = request.user)
     for x in range (0, len(temp)):
         if temp[x].envio == "C":
-            temp2.append({'id':temp[x].id,'preco':temp[x].servico.preco + 1})
-            #temp2[temp[x].id] = temp[x].servico.preco + 1;
+            aux = temp[x].servico.preco + 1
         else:
-            temp2.append({'id':temp[x].id,'preco':temp[x].servico.preco + 1})
-            #temp2[temp[x].id] = temp[x].servico.preco;
+            aux = temp[x].servico.preco
+
+        if temp[x].pagamento == "O":
+            aux = aux + (aux*0.034) + 0.35
+
+        aux = float("{0:.1f}".format(aux))
+
+        temp2.append({'id':temp[x].id, 'preco':aux})
     return render(request, 'servicos/consultarpedidos.html', {'user': request.user, 'req': temp, 'valor': temp2})
 
 

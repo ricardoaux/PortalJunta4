@@ -138,6 +138,7 @@ class Requerimento(models.Model):
     ESTADOS = (
         ("ANALISE", "Em Análise"),
         ("PAGAMENTO", "Aguarda Pagamento"),
+        ("PAGO", "Pagamento Efetuado"),
         ("DIFERIDO", "Diferido"),
         ("RECUSADO", "Recusado"),
     )

@@ -38,6 +38,8 @@ urlpatterns = [
     url(r'^manager/utilizador/(?P<num>[0-9].*)', views.show_cidadao),
     url(r'^manager/$', views.admin, name="admin"),
 
+    url(r'^paypal/ipn/$', views.paypal_ipn),
+    url(r'^success/(?P<num>[0-9]+)/$', views.success_paypal),
 
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.mylogin, name='login'),

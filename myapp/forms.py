@@ -193,6 +193,7 @@ class EstadoForm(forms.ModelForm):
     ES = (
         ("ANALISE", "Em Análise"),
         ("PAGAMENTO", "Aguarda Pagamento"),
+        ("PAGO", "Pagamento Efetuado"),
         ("DIFERIDO", "Diferido"),
         ("RECUSADO", "Recusado"),
     )

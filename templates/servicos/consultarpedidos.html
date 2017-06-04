@@ -143,6 +143,8 @@
                                                 <td> Em Análise </td>
                                          {% elif d.estado == 'PAGAMENTO' %}
                                                 <td> Falta Pagamento </td>
+                                         {% elif d.estado == 'PAGO' %}
+                                                <td> Pagamento Efetuado </td>
                                          {% elif d.estado == 'DIFERIDO' %}
                                                 <td> Diferido </td>
                                          {% elif d.estado == 'RECUSADO' %}
@@ -159,23 +161,50 @@
                                          <tr>
                                              <td colspan="2" class="margem"> {{ d.mensagem }}</td>
 
+                                             <!-- Retirar sandbox e configurar returns page -->
+
                                              {% if d.estado == 'PAGAMENTO' and d.pagamento == 'O'%}
                                                     <td> <a href='/requerimento/pagar/{{ d.id }}'> <input type=button" class="btn" value="Pagamento" /> </a></td>
                                                     <td>
-                                                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                                                            <input type="hidden" name="business" value="ricardoauxiliar@hotmail.com">
+                                                        <form target="_blank" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                                            <input type="hidden" name="business" value="ricardoauxiliar-facilator@hotmail.com">
+                                                            <input type="hidden" name="item_name" value="[{{d.id}}] - {{d.servico.nome}} - Utilizador: {{d.utilizador.username}}">
                                                             <input type="hidden" name="cmd" value="_xclick">
                                                             <input type="hidden" name="hosted_button_id" value="3K9BE2D65ECK6">
                                                             <input type="hidden" name="amount" value="{{ valor|lookup:forloop.counter0 }}">
                                                             <input type="hidden" name="currency_code" value="EUR">
-                                                            <input type="hidden" name="cancel_return" value="/requerimento/">
-                                                            <input type="hidden" name="return" value="/requerimento/">
+                                                            <input type="hidden" name="cancel_return" value="http://127.0.0.1/">
+                                                            <input type="hidden" name="return" value="http://127.0.0.1/success/{{ d.id }}">
+                                                            <input type="hidden" name="notify_url" value="http://127.0.0.1/paypal/ipn/">
                                                             <input type="image" src="https://www.paypalobjects.com/pt_PT/PT/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - A forma mais fácil e segura de efetuar pagamentos online!">
                                                             <img alt="" border="0" src="https://www.paypalobjects.com/pt_PT/i/scr/pixel.gif" width="1" height="1">
                                                         </form>
                                                     </td>
                                              {% endif %}
                                          </tr>
+                                    {% else %}
+                                             {% if d.estado == 'PAGAMENTO' and d.pagamento == 'O'%}
+                                                <tr>
+                                                    <td colspan="2" class="margem"> </td>
+                                                    <td> <a href='/requerimento/pagar/{{ d.id }}'> <input type=button" class="btn" value="Pagamento" /> </a></td>
+                                                    <td>
+                                                        <form target="_blank" action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                                            <input type="hidden" name="business" value="ricardoauxiliar-facilator@hotmail.com">
+                                                            <input type="hidden" name="item_name" value="[{{d.id}}] - {{d.servico.nome}} - Utilizador: {{d.utilizador.username}}">
+                                                            <input type="hidden" name="cmd" value="_xclick">
+                                                            <input type="hidden" name="hosted_button_id" value="3K9BE2D65ECK6">
+                                                            <input type="hidden" name="amount" value="{{ valor|lookup:forloop.counter0 }}">
+                                                            <input type="hidden" name="currency_code" value="EUR">
+                                                            <input type="hidden" name="cbt" value="Confirmar e Voltar ao Site">
+                                                            <input type="hidden" name="cancel_return" value="http://127.0.0.1/">
+                                                            <input type="hidden" name="return" value="http://127.0.0.1/success/{{ d.id }}">
+                                                            <input type="hidden" name="notify_url" value="http://127.0.0.1/paypal/ipn/">
+                                                            <input type="image" src="https://www.paypalobjects.com/pt_PT/PT/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - A forma mais fácil e segura de efetuar pagamentos online!">
+                                                            <img alt="" border="0" src="https://www.paypalobjects.com/pt_PT/i/scr/pixel.gif" width="1" height="1">
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                             {% endif %}
                                     {% endif %}
                                     <tr>
                                         <td><p style="padding-bottom: 50px;"> </p></td>

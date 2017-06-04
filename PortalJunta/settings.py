@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -111,20 +110,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 #For email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 EMAIL_USE_TLS = True
-
 EMAIL_HOST = 'smtp.gmail.com'
-
 EMAIL_HOST_USER = 'juntafreguesiaxpto@gmail.com'
-
 #Must generate specific password for your app in [gmail settings][1]
 EMAIL_HOST_PASSWORD = 'portaljunta17'
-
 EMAIL_PORT = 587
-
 #This did the trick
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
