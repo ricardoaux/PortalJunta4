@@ -8,7 +8,7 @@ from django.dispatch import receiver
 
 class Cidadao(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    num_bi = models.PositiveIntegerField(blank=True, null=True)
+    num_bi = models.PositiveIntegerField(blank=True, null=True, unique=True)
     morada = models.CharField(max_length=100, blank=True, null=True)
     data_nascimento =  models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)
     codigo_postal = models.CharField(max_length=8, blank=True, null=True)
