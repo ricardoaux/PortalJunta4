@@ -1,11 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.http import HttpResponse
 from django.contrib.auth import logout, login
 from myapp.forms import *
 from django.contrib.auth.decorators import login_required
 from myapp.models import Noticia, Evento, Ficheiro, Cidadao, Mensagem, Questionario, Pergunta, Opcao, Votacao, Ocorrencia, Servico, Requerimento
-from django.db import models
 from datetime import datetime
 from django.shortcuts import redirect
 from django.db import transaction
@@ -18,13 +16,29 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Count, Q
+from pysimplesoap.client import SoapClient
 
 import json
 import sys
 import urllib.parse
 import requests
 import cgi
+import zeep
 
+def fastest_object_to_dict(obj):
+    if not hasattr(obj, '__keylist__'):
+        return obj
+    data = {}
+    fields = obj.__keylist__
+    for field in fields:
+        val = getattr(obj, field)
+        if isinstance(val, list):  # tuple not used
+            data[field] = []
+            for item in val:
+                data[field].append(fastest_object_to_dict(item))
+        else:
+            data[field] = fastest_object_to_dict(val)
+    return data
 # Create your views here.
 
 # https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
@@ -41,6 +55,23 @@ def auth_error(request):
 def my_404_view(request):
     return render(request, 'error/404.html', status=404)
 
+@login_required(login_url='auth_error')
+def euPago(request, num=0):
+    if request.method == 'POST':
+        valor = request.POST.get('valor')
+        wsdl = 'http://replica.eupago.pt/replica.eupagov5_no_ssl.wsdl'
+        client = zeep.Client(wsdl = wsdl)
+        chave = 'demo-942b-00f9-14ee-d5c'
+        temp = {'chave':chave, 'id':num, 'valor':valor}
+        result = client.service.gerarReferenciaMB(**temp)
+        if result['estado'] == 0:
+            return render(request, 'servicos/eupago.html', {'entidade': result['entidade'], 'referencia': result['referencia'], 'valor': result['valor']})
+        else:
+            messages.error(request, result['mensagem'])
+            return HttpResponseRedirect('/')
+    else:
+        return HttpResponseRedirect('/')
+
 
 def success_paypal(request, num=0):
     try:
@@ -49,72 +80,6 @@ def success_paypal(request, num=0):
         return HttpResponseRedirect('/')
     except Exception as e:
         messages.error(request, 'Erro ao Atualizar Estado')
-        return HttpResponseRedirect('/')
-
-def paypal_ipn(request):
-    '''This module processes PayPal Instant Payment Notification messages (IPNs).
-    '''
-    form = cgi.FieldStorage()
-
-    #VERIFY_URL_PROD = 'https://www.paypal.com/cgi-bin/webscr'
-    VERIFY_URL_TEST = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
-
-    # Switch as appropriate
-    VERIFY_URL = VERIFY_URL_TEST
-
-    # CGI preamble
-    print("content-type: text/plain")
-    print()
-
-    # Read and parse query string
-    param_str = sys.stdin.readline().strip()
-    params = urllib.parse.parse_qsl(param_str)
-
-    # Add '_notify-validate' parameter
-    params.append(('cmd', '_notify-validate'))
-
-    # Post back to PayPal for validation
-    headers = {'content-type': 'application/x-www-form-urlencoded', 'host': 'www.paypal.com'}
-    r = requests.post(VERIFY_URL, params=params, headers=headers, verify=True)
-    r.raise_for_status()
-
-    # Check return message and take action as needed
-    if r.text == 'VERIFIED':
-        pass
-    elif r.text == 'INVALID':
-        pass
-    else:
-        pass
-
-    fields = {	'item_name': None,
-                  'item_number': None,
-                  'payment_status': None,
-                  'mc_gross': None,
-                  'mc_currency': None,
-                  'txn_id': None,
-                  'receiver_email': None,
-                  'payer_email': None,
-                  'custom': None,
-                  }
-
-    for k in fields.keys():
-        if k in form:
-            fields[k] = form[k].value
-
-    item_name = fields['item_name']
-    item_number = fields['item_number']
-    payment_status = fields['payment_status']
-    payment_amount = fields['mc_gross']
-    payment_currency = fields['mc_currency']
-    txn_id = fields['txn_id']
-    receiver_email = fields['receiver_email']
-    payer_email = fields['payer_email']
-
-    f = open("abc", 'w+')
-    f.write("ccccc"+'\n')
-    f.close()
-
-    return render(request, 'teste.html', {'a': item_name})
 
 
 def mylogin(request):
@@ -491,6 +456,17 @@ def admin(request):
     else:
         messages.error(request, 'Não dispõe de permissões')
         return HttpResponseRedirect('/')
+
+
+
+@login_required(login_url='auth_error')
+def eupago_redirect(request):
+    return HttpResponseRedirect('https://replica.eupago.pt/clientes/')
+
+
+@login_required(login_url='auth_error')
+def paypal_redirect(request):
+    return HttpResponseRedirect('https://developer.paypal.com/developer/accounts')
 
 
 @login_required(login_url='auth_error')

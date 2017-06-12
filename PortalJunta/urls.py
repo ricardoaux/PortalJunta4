@@ -36,10 +36,12 @@ urlpatterns = [
     url(r'^manager/requerimento/(?P<num>[0-9]+)/$', views.requerimento_redirect),
     url(r'^manager/requerimento/(?P<num>[0-9]+)/change/$', views.change_state),
     url(r'^manager/utilizador/(?P<num>[0-9].*)', views.show_cidadao),
+    url(r'^manager/eupago/$', views.eupago_redirect),
+    url(r'^manager/paypal/$', views.paypal_redirect),
     url(r'^manager/$', views.admin, name="admin"),
 
-    url(r'^paypal/ipn/$', views.paypal_ipn),
     url(r'^success/(?P<num>[0-9]+)/$', views.success_paypal),
+    url(r'^requerimento/eupago/$', views.euPago),
 
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.mylogin, name='login'),

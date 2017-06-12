@@ -310,6 +310,11 @@ left: auto;
                                     letter-spacing: 2px;line-height: 17px; font-size:20px;}
     .tabs .mais .btn:hover{background: #716a72; color: #fff;}
 
+    .tabs .btn{color: #fff; padding: 12px 10px; border-radius: 5px; background: #c85b5f; text-transform: uppercase; border:none; text-shadow: none; font-family: 'source_sans_problack';
+                                    letter-spacing: 2px; font-size: 17px;}
+    .tabs .btn:hover{background: #716a72; color: #fff;}
+
+
 
 
     .tabs h1 {color: #c85b5f; font-size: 30px; letter-spacing: 1px; line-height:30px; font-family: 'source_sans_problack'; text-transform: uppercase; text-align: center;}
