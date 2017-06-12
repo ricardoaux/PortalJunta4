@@ -20,21 +20,6 @@ from django.db.models import Count, Q
 import json
 import zeep
 
-def fastest_object_to_dict(obj):
-    if not hasattr(obj, '__keylist__'):
-        return obj
-    data = {}
-    fields = obj.__keylist__
-    for field in fields:
-        val = getattr(obj, field)
-        if isinstance(val, list):  # tuple not used
-            data[field] = []
-            for item in val:
-                data[field].append(fastest_object_to_dict(item))
-        else:
-            data[field] = fastest_object_to_dict(val)
-    return data
-# Create your views here.
 
 # https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
 def index(request):
@@ -111,7 +96,9 @@ def register_page(request):
             user.save()
             cidadao = Cidadao(user=user, num_bi=form.cleaned_data['num_bi'], morada=form.cleaned_data['morada'],
                                 codigo_postal = form.cleaned_data['codigopostal'], localidade=form.cleaned_data['localidade'],
-                                telefone = form.cleaned_data['telefone'], nro_eleitor = form.cleaned_data['nro_eleitor'])
+                                telefone = form.cleaned_data['telefone'], nro_eleitor = form.cleaned_data['nro_eleitor'],
+                                data_nascimento = form.cleaned_data['data_nascimento'], pai = form.cleaned_data['pai'],
+                                mae = form.cleaned_data['mae'])
             cidadao.save()
             token = default_token_generator.make_token(user)
             uid64 = urlsafe_base64_encode(force_bytes(user.pk))
@@ -317,6 +304,7 @@ def questionario2(request, num=0):
 
 def show_taxas(request):
     return render(request, 'servicos/taxas.html', {'user': request.user, 'taxas': Servico.objects.all()})
+    return render(request, 'servicos/taxas.html', {'user': request.user, 'taxas': Servico.objects.all()})
 
 
 @login_required(login_url='auth_error')
@@ -455,7 +443,6 @@ def admin(request):
     else:
         messages.error(request, 'Não dispõe de permissões')
         return HttpResponseRedirect('/')
-
 
 
 @login_required(login_url='auth_error')

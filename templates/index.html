@@ -31,7 +31,13 @@
                         truncated = truncated.substr(minLenght, maxLength) + '...';
                     }
                     return truncated;
-               }
+            }
+
+
+            function imgError(image) {
+                    image.src = "{% static "" %}"+"img/executivo_junta/noimage.jpg";
+                    return true;
+            }
 
 
             var text = "";
@@ -40,6 +46,7 @@
             a = a.replace(/&quot;/ig,'"');
             var b = JSON.parse(a);
             var flag = 0;
+            var image = new Image();
 
 
             var c = '{{ events }}'
@@ -117,12 +124,20 @@
                         }
 
 
+                        if (d[0].imagem != '') {
+                            image.src ={{MEDIA_URL}}+d[0].imagem;
+                        }
+                        else {
+                            imgError(image);
+                        }
+
                         text +=
                             "<div id='myTabContent' class='tab-content'>" +
                               "<div class='tab-pane fade active in' id='Sedegestasteet'>" +
                                 "<div class='row-fluid'>" +
                                     "<div class='block'>" +
-                                        "<img src='{% static 'img/img1.png' %}' class='spacing-b' alt=''>" +
+                                        "<h4>" + d[0].data_evento + "</h4><br>" +
+                                        "<img src=" + image.src + " class='spacing-b' alt=''><br>" +
                                         "<p class='last'>" + d[0].descricao + "</p>" +
                                         "<a href='/eventos/" + d[0].id + "' class='btn'>Ler Mais</a>" +
                                     "</div>" +
@@ -138,11 +153,19 @@
                 }
 
                 if (d[1] != null){
+                    if (d[1].imagem != '') {
+                        image.src = {{MEDIA_URL}}+d[1].imagem;
+                    }
+                    else {
+                        imgError(image);
+                    }
+
                    text +=
                     "<div class='tab-pane fade' id='morbiinterdum'>" +
                         "<div class='row-fluid'>" +
                             "<div class='block'>" +
-                                "<img src='{% static 'img/img1.png' %}' class='spacing-b' alt=''>" +
+                                "<h4>" + d[1].data_evento + "</h4><br>" +
+                                "<img src=" + image.src + " class='spacing-b' alt=''><br>" +
                                 "<p class='last'>" + d[1].descricao + "</p>" +
                                 "<a href='/eventos/" + d[1].id + "' class='btn'>Ler Mais</a>" +
                             "</div>" +
@@ -155,11 +178,19 @@
                 }
 
                 if (d[2] != null){
+                    if (d[2].imagem != '') {
+                        image.src = {{MEDIA_URL}}+d[2].imagem;
+                    }
+                    else {
+                        imgError(image);
+                    }
+
                     text +=
                         "<div class='tab-pane fade' id='interdumMorbi'>" +
                             "<div class='row-fluid'>" +
                                 "<div class='block'>" +
-                                    "<img src='{% static 'img/img1.png' %}' class='spacing-b' alt=''>" +
+                                    "<h4>" + d[2].data_evento + "</h4><br>" +
+                                    "<img src=" + image.src + " class='spacing-b' alt=''><br>" +
                                     "<p class='last'>" + d[2].descricao + "</p>" +
                                     "<a href='/eventos/" + d[2].id + "' class='btn'>Ler Mais</a>" +
                                 "</div>" +
@@ -411,7 +442,6 @@
 </div>
 
 
-<script src="{% static 'js/jquery-1.9.1.js' %}"></script>
 <script src="{% static 'js/bootstrap.js' %}"></script>
 <script>
             $('#myCarousel').carousel({

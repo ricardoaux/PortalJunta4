@@ -49,7 +49,7 @@ class UserCreationForm(forms.Form):
     nome = forms.CharField(label='Nome', max_length=30, required=True)
     apelido = forms.CharField(label='Apelido', max_length=30, required=True)
     num_bi = forms.IntegerField(label='Número do CC', required=True)
-    data_nascimento = forms.DateField(label='Data de Nascimento', required=True, widget=extras.SelectDateWidget)
+    data_nascimento = forms.DateField(label='Data de Nascimento', required=True, widget=extras.SelectDateWidget(years =range(1900, 2017)))
     morada = forms.CharField(label='Morada Completa', max_length=100, required=True)
     codigopostal = forms.CharField(label='Código Postal', max_length=8, required=True)
     localidade = forms.CharField(label='Localidade', max_length=30, required=True)
@@ -107,18 +107,6 @@ class UserCreationForm(forms.Form):
             else:
                 return telefone
 
-#
-# class DocumentForm(forms.ModelForm):
-#     class Meta:
-#         model = Ficheiro
-#         fields = ('titulo', 'descricao', 'tipo', 'ficheiro')
-#
-#
-# class QuestionarioForm(forms.ModelForm):
-#     class Meta:
-#         model = Questionario
-#         fields = ('titulo', 'descricao', 'quest')
-
 
 class PerguntaForm(forms.ModelForm):
     class Meta:
@@ -153,7 +141,7 @@ class RequerimentoForm(forms.ModelForm):
         ("O", "Pagar Online"),
     )
 
-    opcoes = (Servico.objects.values_list('id', 'nome'))
+    opcoes = Servico.objects.values_list('id', 'nome')
     servico = forms.MultipleChoiceField(widget=forms.SelectMultiple, choices=opcoes)
     descricao = forms.CharField(label='Declaro que:', max_length=1000, required=True, widget=forms.Textarea)
     documento = forms.FileField(label='Anexar ficheiro relevante (não obrigatório)', required=False)
