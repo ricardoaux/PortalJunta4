@@ -7,7 +7,7 @@
     {% load static %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title> Dados de Pagamento </title>
+    <title> Taxas dos Serviços </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -45,7 +45,7 @@
             <a href="/login/" class="btnin">login</a>
             {% endif %}
             <!-- <a data-toggle="modal" data-target="#login-modal"> <img src="{% static "img/Signin.png" %}" alt="" class="bw"> </a> -->
-            <h1> Dados de Pagamento </h1>
+            <h1> Listagem de Serviços e Taxas </h1>
 
             {% if messages %}
             <ul class="messages">
@@ -123,37 +123,36 @@
 
 <div class="container">
     <div class="tabs2">
-
-        <span style="font-weight:bold;" >Referência gerada com sucesso</span>
-        <div id="htmlReferenciaGerada">
-            <p style='font-size:medium;padding-top:20px;text-align:justify;'>Para pagar esta encomenda através da Rede de Caixas Automáticas Multibanco, utilize o seu cartão VISA/MasterCard, Visa Electron ou Multibanco, digite o seu código secreto e seleccione a operação PAGAMENTOS / PAGAMENTO DE SERVIÇOS e introduza os seguintes dados:</p>
-            <table style="margin-top: 10px;border: 1px solid #000;" width="450px" cellspacing="0" align="center">
-
-                <tr>
-                    <td colspan="2" align="center">
-                        <img src="https://replica.eupago.pt/repositorio/imagens/multibanco.png" alt="Multibanco" height="25" />
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="height:25px;vertical-align:center;background-color:#3a87ad;font-size:small;text-align:center;color:#ebebeb;">Multibanco (Pagamento de Compras\Serviços)</td>
-                </tr>
-                <tr>
-                    <td align="left" style="font-size:small;font-weight:bold;padding-left:15px; padding-top:20px;">Entidade:</td>
-                    <td align="left" style="font-size:small;padding-top:20px;"> {{ entidade }} </td>
-                </tr>
-                <tr>
-                    <td align="left" style="font-size:small;font-weight:bold;padding-left:15px;">Refer&ecirc;ncia:</td>
-                    <td align="left" style="font-size:small;"> {{ referencia }} </td>
-                </tr>
-                <tr>
-                    <td align="left" style="font-size:small;font-weight:bold;padding-left:15px;padding-bottom:20px;">Valor:</td>
-                    <td align="left" style="font-size:small;padding-bottom:20px;padding-bottom:20px;"> {{ valor }} EUR</td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="height:30px;vertical-align:center;background-color:#3a87ad;font-size:small;text-align:center;color:#ebebeb;">O tal&atilde;o emitido pela caixa autom&aacute;tica faz de prova de pagamento.<br/>Conserve-o.</td>
-                </tr>
-            </table>
+        <div class = "textclass">
+            <p> Acresce 1€ ao valor do serviço caso seja enviado por correio</p>
+            <p> Acresce 0.35€ + 3.4% do preço do serviço  pelo pagamento online</p>
+            {% if taxas.values.first != None %}
         </div>
+        <table class="table">
+            <tr>
+                <th> Serviço </th>
+                <th> Preço </th>
+            </tr>
+
+            {% for d in taxas %}
+
+            <tr>
+                <td class="metade"> {{ d.nome }} </td>
+                <td> {{ d.preco }} € </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class = "textclass">
+            <h2> Sem Serviços Disponíveis </h2>
+        </div>
+        {% endif %}
+    </div>
+    <div class="tabs">
+        <div class = "textclass">
+            <h2> Formulário do requerimento disponível para download </h2>
+        </div>
+        <a href='{% static "documents/Requerimento.pdf" %}'> Download </a>
     </div>
 </div>
 

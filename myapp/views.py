@@ -16,13 +16,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Count, Q
-from pysimplesoap.client import SoapClient
 
 import json
-import sys
-import urllib.parse
-import requests
-import cgi
 import zeep
 
 def fastest_object_to_dict(obj):
@@ -318,6 +313,10 @@ def questionario(request):
 def questionario2(request, num=0):
     return render(request, 'outros/questionario.html', {'user': request.user, 'quest': Questionario.objects.filter(id=num),
                                                         'opcao': '2'})
+
+
+def show_taxas(request):
+    return render(request, 'servicos/taxas.html', {'user': request.user, 'taxas': Servico.objects.all()})
 
 
 @login_required(login_url='auth_error')

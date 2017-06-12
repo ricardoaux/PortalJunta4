@@ -73,6 +73,7 @@ urlpatterns = [
     url(r'^ocorrencia/$', views.ocorrencias),
     url(r'^requerimento/$', views.requerimentos),
     url(r'^requerimento/consultar$', views.estado_requerimentos),
+    url(r'^servicos/$', views.show_taxas),
 
     url(r'^autenticacao/error/$', views.auth_error, name='auth_error'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
